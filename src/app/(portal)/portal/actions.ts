@@ -89,7 +89,7 @@ export async function uploadReceipt(prevState: any, formData: FormData) {
     // 3. Insert into payments via RPC (to bypass RLS)
     const { error: dbError } = await supabase.rpc('submit_receipt', {
       c_id: customerId,
-      p_plate: customer?.primary_vehicle_plate || 'Unknown',
+      p_plate: (customer as any)?.primary_vehicle_plate || 'Unknown',
       p_url: publicUrl
     });
 
