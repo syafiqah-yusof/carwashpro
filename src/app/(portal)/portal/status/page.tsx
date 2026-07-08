@@ -14,14 +14,16 @@ export default async function PortalStatusPage() {
   const supabase = createClient(cookieStore);
 
   // Fetch customer securely using RPC to bypass RLS for their specific ID
-  const { data: customer, error } = await supabase
+  const { data, error } = await supabase
     .rpc('get_customer_profile', { c_id: customerId })
     .single();
 
-  if (error || !customer) {
+  if (error || !data) {
     console.error("Status Page Error:", error);
     redirect('/portal/login');
   }
+
+  const customer = data as any;
 
   // Calculate rewards logic
   const washesUntilFree = 5 - ((customer.total_visits || 0) % 6);
