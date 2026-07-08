@@ -23,33 +23,37 @@ export default function Navbar() {
     <header>
       <nav className="navbar-glass flex items-center justify-between px-6 py-3 mb-6">
         <div className="flex items-center space-x-6">
-          <Link href="/" className="flex items-center space-x-2 text-white font-bold text-xl tracking-tight">
+          <Link href="/admin" className="flex items-center space-x-2 text-white font-bold text-xl tracking-tight">
             <img src="/akc-logo.png" alt="AKC Logo" className="h-9 rounded-lg object-cover" />
             <span>AKC Car Wash</span>
           </Link>
           
           <div className="hidden md:flex flex-wrap gap-x-4 gap-y-2 items-center">
-            <Link href="/" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+            <Link href="/admin" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-speedometer2 mr-1"></i> Dashboard
             </Link>
             
-            <Link href="/workflow" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+            <Link href="/admin/workflow" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-kanban mr-1"></i> Workflow
             </Link>
 
-            <Link href="/payments" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+            <Link href="/admin/payments" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-credit-card mr-1"></i> Payments
             </Link>
+
+            <Link href="/admin/expenses" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+              <i className="bi bi-wallet2 mr-1"></i> Expenses
+            </Link>
             
-            <Link href="/customers" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+            <Link href="/admin/customers" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-person-badge mr-1"></i> Customers
             </Link>
             
-            <Link href="/inventory" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+            <Link href="/admin/inventory" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-box-seam mr-1"></i> Inventory
             </Link>
             
-            <Link href="/hr" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+            <Link href="/admin/hr" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-people-fill mr-1"></i> HR & Staff
             </Link>
           </div>
@@ -84,9 +88,10 @@ export default function Navbar() {
       {/* Mobile Menu (simplified for now) */}
       {isMenuOpen && (
         <div className="md:hidden glass-card mx-4 mb-4 flex flex-col space-y-3">
-          <Link href="/" className="text-gray-300 hover:text-white"><i className="bi bi-speedometer2 mr-2"></i>Dashboard</Link>
-          <Link href="/workflow" className="text-gray-300 hover:text-white"><i className="bi bi-kanban mr-2"></i>Workflow</Link>
-          <Link href="/payments" className="text-gray-300 hover:text-white"><i className="bi bi-credit-card mr-2"></i>Payments</Link>
+          <Link href="/admin" className="text-gray-300 hover:text-white"><i className="bi bi-speedometer2 mr-2"></i>Dashboard</Link>
+          <Link href="/admin/workflow" className="text-gray-300 hover:text-white"><i className="bi bi-kanban mr-2"></i>Workflow</Link>
+          <Link href="/admin/payments" className="text-gray-300 hover:text-white"><i className="bi bi-credit-card mr-2"></i>Payments</Link>
+          <Link href="/admin/expenses" className="text-gray-300 hover:text-white"><i className="bi bi-wallet2 mr-2"></i>Expenses</Link>
         </div>
       )}
     </header>

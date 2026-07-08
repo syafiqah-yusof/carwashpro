@@ -1,8 +1,15 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { logoutCustomer } from "../portal/actions";
 
 export default function LogoutButton() {
+  const pathname = usePathname();
+  
+  if (pathname === "/portal/login" || pathname === "/portal/register") {
+    return null;
+  }
+
   return (
     <button 
       onClick={() => logoutCustomer()}

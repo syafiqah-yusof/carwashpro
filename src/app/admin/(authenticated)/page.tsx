@@ -5,8 +5,41 @@ export default async function DashboardPage() {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Example of fetching the connection status
-  const { data: services, error } = await supabase.from('services').select('*').limit(3);
+  // 1. Fetch available services
+  const { data: services, error: servicesError } = await supabase.from('services').select('*').limit(3);
+
+  // 2. Fetch today's payments
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const { data: todaysPayments, error: paymentsError } = await supabase
+    .from('payments')
+    .select('amount, status, date_time, vehicle_plate, service_id, payment_method')
+    .gte('date_time', today.toISOString())
+    .lt('date_time', tomorrow.toISOString())
+    .order('date_time', { ascending: false });
+
+  // 3. Fetch recent 5 payments for activity feed
+  const { data: recentPayments } = await supabase
+    .from('payments')
+    .select('payment_id, amount, status, date_time, vehicle_plate, services(service_name)')
+    .order('date_time', { ascending: false })
+    .limit(5);
+
+  // 4. Fetch active staff
+  const { count: staffCount, error: staffError } = await supabase
+    .from('employees')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'Active');
+
+  const error = servicesError || paymentsError || staffError;
+
+  // Calculate metrics
+  const revenue = todaysPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0;
+  const washCount = todaysPayments?.length || 0;
+  const activeStaff = staffCount || 0;
 
   return (
     <div className="space-y-6">
@@ -22,7 +55,7 @@ export default async function DashboardPage() {
         <div className="glass-card flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-1">Today's Revenue</p>
-            <h3 className="text-2xl font-bold text-white">$450.00</h3>
+            <h3 className="text-2xl font-bold text-white">RM {revenue.toFixed(2)}</h3>
           </div>
           <div className="bg-green-500/20 p-3 rounded-xl border border-green-500/30">
             <i className="bi bi-cash-stack text-2xl text-green-400"></i>
@@ -32,7 +65,7 @@ export default async function DashboardPage() {
         <div className="glass-card flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-1">Vehicles Washed</p>
-            <h3 className="text-2xl font-bold text-white">12</h3>
+            <h3 className="text-2xl font-bold text-white">{washCount}</h3>
           </div>
           <div className="bg-blue-500/20 p-3 rounded-xl border border-blue-500/30">
             <i className="bi bi-car-front-fill text-2xl text-blue-400"></i>
@@ -42,7 +75,7 @@ export default async function DashboardPage() {
         <div className="glass-card flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-1">Active Staff</p>
-            <h3 className="text-2xl font-bold text-white">5</h3>
+            <h3 className="text-2xl font-bold text-white">{activeStaff}</h3>
           </div>
           <div className="bg-purple-500/20 p-3 rounded-xl border border-purple-500/30">
             <i className="bi bi-people-fill text-2xl text-purple-400"></i>
@@ -52,8 +85,8 @@ export default async function DashboardPage() {
         <div className="glass-card flex items-center justify-between">
           <div>
             <p className="text-gray-400 text-sm font-medium uppercase tracking-wider mb-1">Database Status</p>
-            <h3 className="text-lg font-bold text-green-400 flex items-center mt-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+            <h3 className={`text-lg font-bold flex items-center mt-1 ${error ? 'text-red-400' : 'text-green-400'}`}>
+              <span className={`w-2.5 h-2.5 rounded-full mr-2 animate-pulse ${error ? 'bg-red-500' : 'bg-green-500'}`}></span>
               {error ? "Disconnected" : "Connected"}
             </h3>
           </div>
@@ -82,27 +115,32 @@ export default async function DashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b border-[var(--glass-border)] hover:bg-white/5 transition-colors">
-                  <td className="py-4 text-gray-300">10:45 AM</td>
-                  <td className="py-4 font-medium text-white">ABC 1234</td>
-                  <td className="py-4 text-gray-300">Premium Wash</td>
-                  <td className="py-4"><span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full border border-green-500/30">Completed</span></td>
-                  <td className="py-4 text-right font-medium text-white">$45.00</td>
-                </tr>
-                <tr className="border-b border-[var(--glass-border)] hover:bg-white/5 transition-colors">
-                  <td className="py-4 text-gray-300">11:15 AM</td>
-                  <td className="py-4 font-medium text-white">XYZ 9876</td>
-                  <td className="py-4 text-gray-300">Basic Wash</td>
-                  <td className="py-4"><span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full border border-yellow-500/30">In Progress</span></td>
-                  <td className="py-4 text-right font-medium text-white">$25.00</td>
-                </tr>
-                <tr className="hover:bg-white/5 transition-colors">
-                  <td className="py-4 text-gray-300">11:30 AM</td>
-                  <td className="py-4 font-medium text-white">DEF 4567</td>
-                  <td className="py-4 text-gray-300">Interior Detailing</td>
-                  <td className="py-4"><span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded-full border border-blue-500/30">Waiting</span></td>
-                  <td className="py-4 text-right font-medium text-white">$85.00</td>
-                </tr>
+                {recentPayments && recentPayments.length > 0 ? (
+                  recentPayments.map((payment) => {
+                    const time = new Date(payment.date_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    // @ts-ignore
+                    const serviceName = payment.services?.service_name || "Unknown Service";
+                    
+                    let statusColor = "bg-gray-500/20 text-gray-400 border-gray-500/30";
+                    if (payment.status === 'Completed') statusColor = "bg-green-500/20 text-green-400 border-green-500/30";
+                    if (payment.status === 'Pending') statusColor = "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+                    if (payment.status === 'Verified') statusColor = "bg-blue-500/20 text-blue-400 border-blue-500/30";
+                    
+                    return (
+                      <tr key={payment.payment_id} className="border-b border-[var(--glass-border)] hover:bg-white/5 transition-colors">
+                        <td className="py-4 text-gray-300">{time}</td>
+                        <td className="py-4 font-medium text-white">{payment.vehicle_plate || "N/A"}</td>
+                        <td className="py-4 text-gray-300">{serviceName}</td>
+                        <td className="py-4"><span className={`px-2 py-1 text-xs rounded-full border ${statusColor}`}>{payment.status || "Unknown"}</span></td>
+                        <td className="py-4 text-right font-medium text-white">RM {(payment.amount || 0).toFixed(2)}</td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-gray-500 italic">No recent payments found today.</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -119,12 +157,12 @@ export default async function DashboardPage() {
               services.map((service) => (
                 <li key={service.service_id} className="p-3 bg-black/20 rounded-lg border border-white/5 flex justify-between items-center">
                   <span className="text-white">{service.service_name}</span>
-                  <span className="text-blue-400 font-bold">${service.price}</span>
+                  <span className="text-blue-400 font-bold">RM {service.price}</span>
                 </li>
               ))
             ) : (
               <li className="p-4 bg-yellow-500/10 rounded-lg border border-yellow-500/20 text-yellow-200 text-sm">
-                No services found. Add some data to the Services table in Supabase!
+                No services found. Run the CSV migration to add them!
               </li>
             )}
           </ul>
