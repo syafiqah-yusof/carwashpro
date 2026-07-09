@@ -83,6 +83,15 @@ export async function updateJobStatus(jobId: string, newStatus: string) {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // Fetch the current job to check its status and customer_id
+    const { data: job, error: jobFetchError } = await supabase
+      .from('vehicle_jobs')
+      .select('status, customer_id')
+      .eq('vehicle_job_id', jobId)
+      .single();
+
+    if (jobFetchError) throw jobFetchError;
+
     const updateData: any = { status: newStatus };
     if (newStatus === 'Ready' || newStatus === 'Completed') {
       updateData.completion_time = new Date().toISOString();
@@ -95,7 +104,24 @@ export async function updateJobStatus(jobId: string, newStatus: string) {
 
     if (error) throw error;
 
+    // Increment total_washes if transitioning to Completed and it wasn't already Completed
+    if (newStatus === 'Completed' && job.status !== 'Completed' && job.customer_id) {
+      const { data: cust } = await supabase
+        .from('customers')
+        .select('total_washes')
+        .eq('customer_id', job.customer_id)
+        .single();
+        
+      if (cust) {
+        await supabase
+          .from('customers')
+          .update({ total_washes: (cust.total_washes || 0) + 1 })
+          .eq('customer_id', job.customer_id);
+      }
+    }
+
     revalidatePath("/admin/workflow");
+    revalidatePath("/admin/customers");
     return { success: true };
   } catch (err: any) {
     console.error("Update Status Error:", err);
