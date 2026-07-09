@@ -2,7 +2,7 @@
 import { useState, useActionState, useEffect } from "react";
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { checkInEmployee, generatePayroll, requestCashAdvance, quickCheckIn } from './actions';
+import { checkInEmployee, generatePayroll, requestCashAdvance, quickCheckIn, updateAdvanceDate } from './actions';
 
 export default function HRClient({
   tab, employees, attendance, advances, payroll
@@ -275,7 +275,34 @@ export default function HRClient({
                 ) : (
                   advances.map(item => (
                     <tr key={item.id} className="border-b border-[var(--glass-border)] hover:bg-white/5 transition-colors">
-                      <td className="p-4 text-gray-300">{new Date(item.date).toLocaleDateString()}</td>
+                      <td className="p-4 text-gray-300">
+                        <div className="flex flex-col gap-1 w-36">
+                          <input 
+                            type="date" 
+                            id={`adv-date-${item.id}`}
+                            defaultValue={new Date(item.date).toISOString().split('T')[0]}
+                            className="bg-gray-800 border border-gray-600 rounded focus:border-cyan-500 focus:outline-none text-gray-300 text-xs p-1"
+                          />
+                          <button 
+                            onClick={async (e) => {
+                              const btn = e.currentTarget;
+                              btn.innerHTML = 'Saving...';
+                              const val = (document.getElementById(`adv-date-${item.id}`) as HTMLInputElement).value;
+                              const res = await updateAdvanceDate(item.id, val);
+                              if (res?.error) {
+                                alert(res.error);
+                                btn.innerHTML = 'Save Date';
+                              } else {
+                                btn.innerHTML = 'Saved!';
+                                setTimeout(() => { btn.innerHTML = 'Save Date'; }, 2000);
+                              }
+                            }}
+                            className="bg-cyan-600/30 text-cyan-400 hover:bg-cyan-600 hover:text-white border border-cyan-500/50 transition-colors text-xs px-2 py-1 rounded"
+                          >
+                            Save Date
+                          </button>
+                        </div>
+                      </td>
                       <td className="p-4 font-medium text-white">{item.employees?.full_name || item.employee_name || 'Unknown'}</td>
                       <td className="p-4 text-yellow-400 font-bold">RM {(item.amount || 0).toFixed(2)}</td>
                       <td className="p-4 text-gray-300">{item.record_type || 'Cash Advance'}</td>

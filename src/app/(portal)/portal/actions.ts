@@ -87,20 +87,91 @@ export async function uploadReceipt(prevState: any, formData: FormData) {
     const { data: customer } = await supabase.rpc('get_customer_profile', { c_id: customerId }).single();
     
     // 3. Insert into payments via RPC (to bypass RLS)
+    const amount = Number(formData.get("amount")) || 0;
+    const notes = formData.get("notes") as string || '';
+
     const { error: dbError } = await supabase.rpc('submit_receipt', {
-      c_id: customerId,
+      p_c_id: customerId,
       p_plate: (customer as any)?.primary_vehicle_plate || 'Unknown',
-      p_url: publicUrl
+      p_url: publicUrl,
+      p_amount: amount,
+      p_notes: notes
     });
 
     if (dbError) {
-      console.error("Submit Receipt Error:", dbError);
-      return { error: "Receipt uploaded, but failed to link to your account." };
+      console.error("RPC Error:", dbError);
+      return { error: "Database error saving receipt." };
     }
 
     return { success: true };
-  } catch (err) {
-    console.error(err);
-    return { error: "An unexpected error occurred during upload." };
+  } catch (err: any) {
+    console.error("Upload Error:", err);
+    return { error: err.message || "Failed to upload receipt" };
+  }
+}
+
+export async function bookAppointment(prevState: any, formData: FormData) {
+  try {
+    const cookieStore = await cookies();
+    const customerId = cookieStore.get('customer_id')?.value;
+    if (!customerId) return { error: "Not logged in" };
+
+    const supabase = createClient(cookieStore);
+    
+    // Get customer profile to get plate
+    const { data: customer } = await supabase.rpc('get_customer_profile', { c_id: customerId }).single();
+
+    const date = formData.get("date") as string;
+    const time = formData.get("time") as string || null;
+    const notes = formData.get("notes") as string || '';
+
+    if (!date) return { error: "Date is required" };
+
+    const { error: dbError } = await supabase.rpc('book_appointment', {
+      p_c_id: customerId,
+      p_plate: (customer as any)?.primary_vehicle_plate || 'Unknown',
+      p_date: date,
+      p_time: time,
+      p_notes: notes
+    });
+
+    if (dbError) {
+      console.error("RPC Error:", dbError);
+      return { error: "Failed to book appointment." };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Failed to book appointment" };
+  }
+}
+
+export async function submitReview(prevState: any, formData: FormData) {
+  try {
+    const cookieStore = await cookies();
+    const customerId = cookieStore.get('customer_id')?.value;
+    if (!customerId) return { error: "Not logged in" };
+
+    const supabase = createClient(cookieStore);
+
+    const rating = Number(formData.get("rating"));
+    const comment = formData.get("comment") as string || '';
+
+    if (!rating || rating < 1 || rating > 5) return { error: "Please provide a valid rating between 1 and 5 stars." };
+
+    const { error: dbError } = await supabase.rpc('submit_customer_review', {
+      p_c_id: customerId,
+      p_rating: rating,
+      p_comment: comment
+    });
+
+    if (dbError) {
+      console.error("RPC Error:", dbError);
+      return { error: "Failed to submit review." };
+    }
+
+    return { success: true };
+  } catch (err: any) {
+    return { error: err.message || "Failed to submit review" };
   }
 }

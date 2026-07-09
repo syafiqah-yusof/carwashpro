@@ -13,6 +13,12 @@ export default async function CustomersPage() {
     .select('*')
     .order('created_date', { ascending: false });
 
+  // Fetch reviews
+  const { data: reviews } = await supabase
+    .from('customer_reviews')
+    .select('*, customers(full_name)')
+    .order('created_at', { ascending: false });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-2">
@@ -105,6 +111,50 @@ export default async function CustomersPage() {
                     </tr>
                   );
                 })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Customer Reviews Section */}
+      <div className="flex justify-between items-center mt-12 mb-2">
+        <h2 className="text-2xl font-bold text-white flex items-center">
+          <i className="bi bi-star-fill text-yellow-500 mr-2"></i> Customer Reviews
+        </h2>
+      </div>
+
+      <div className="glass-card p-0 overflow-hidden border border-gray-700/50 shadow-2xl">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse min-w-[800px]">
+            <thead className="bg-black/40">
+              <tr className="border-b border-[var(--glass-border)]">
+                <th className="p-4 text-gray-300 font-medium">Date</th>
+                <th className="p-4 text-gray-300 font-medium">Customer</th>
+                <th className="p-4 text-gray-300 font-medium">Rating</th>
+                <th className="p-4 text-gray-300 font-medium">Feedback / Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(!reviews || reviews.length === 0) ? (
+                <tr>
+                  <td colSpan={4} className="text-center text-gray-500 py-10">No reviews submitted yet.</td>
+                </tr>
+              ) : (
+                reviews.map(rev => (
+                  <tr key={rev.review_id} className="border-b border-[var(--glass-border)] hover:bg-white/5 transition-colors">
+                    <td className="p-4 text-gray-400 text-sm whitespace-nowrap">
+                      {new Date(rev.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 font-bold text-white">{rev.customers?.full_name || 'Unknown'}</td>
+                    <td className="p-4 text-yellow-500 whitespace-nowrap">
+                      {[...Array(5)].map((_, i) => (
+                        <i key={i} className={`bi ${i < rev.rating ? 'bi-star-fill' : 'bi-star text-gray-600'} mr-1`}></i>
+                      ))}
+                    </td>
+                    <td className="p-4 text-gray-300 max-w-md">{rev.comment || '-'}</td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>

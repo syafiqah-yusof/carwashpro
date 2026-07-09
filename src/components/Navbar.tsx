@@ -37,6 +37,10 @@ export default function Navbar() {
               <i className="bi bi-kanban mr-1"></i> Workflow
             </Link>
 
+            <Link href="/admin/appointments" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
+              <i className="bi bi-calendar-check mr-1"></i> Appointments
+            </Link>
+
             <Link href="/admin/payments" className="text-gray-300 hover:text-blue-500 font-medium transition-colors flex items-center whitespace-nowrap">
               <i className="bi bi-credit-card mr-1"></i> Payments
             </Link>

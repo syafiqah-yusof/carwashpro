@@ -188,3 +188,21 @@ export async function quickCheckIn(employee_id: string, dateStr: string) {
   revalidatePath('/admin/hr');
   return { success: true };
 }
+
+export async function updateAdvanceDate(id: number, new_date: string) {
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from('cash_advances')
+    .update({ date: new_date })
+    .eq('id', id);
+
+  if (error) {
+    console.error('Error updating advance date:', error);
+    return { error: error.message };
+  }
+
+  revalidatePath('/admin/hr');
+  return { success: true };
+}
