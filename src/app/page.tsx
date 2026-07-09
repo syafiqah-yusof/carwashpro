@@ -108,12 +108,26 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Find Us</h2>
           <p className="text-gray-400 mb-10 max-w-2xl mx-auto text-lg">Drop by our detailing studio for a premium wash. Follow the map below for live directions.</p>
-          <div className="glass-card p-2 rounded-2xl border border-white/10 max-w-4xl mx-auto overflow-hidden shadow-2xl bg-white/[0.02]">
-            <iframe 
-              src="https://embed.waze.com/iframe?zoom=16&lat=2.992551&lon=101.799595&ct=livemap" 
-              className="w-full h-[450px] rounded-xl border-0" 
-              allowFullScreen
-            ></iframe>
+          <div className="glass-card p-8 rounded-2xl border border-white/10 max-w-2xl mx-auto shadow-2xl bg-white/[0.02] flex flex-col md:flex-row items-center justify-center gap-8">
+            <div className="bg-white p-3 rounded-xl shadow-lg shrink-0">
+              <img 
+                src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://waze.com/ul/hw283h8b0y" 
+                alt="Waze QR Code" 
+                className="w-40 h-40" 
+              />
+            </div>
+            <div className="text-left flex-1 text-center md:text-left">
+              <h3 className="text-2xl font-bold text-white mb-2">AKC Car Wash</h3>
+              <p className="text-gray-400 mb-6 text-sm">Scan the QR code with your phone camera or tap the button below to launch Waze.</p>
+              <a 
+                href="https://waze.com/ul/hw283h8b0y" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)] hover:shadow-[0_0_30px_rgba(59,130,246,0.5)]"
+              >
+                <i className="bi bi-geo-alt-fill mr-2"></i> Open in Waze
+              </a>
+            </div>
           </div>
         </div>
       </section>
