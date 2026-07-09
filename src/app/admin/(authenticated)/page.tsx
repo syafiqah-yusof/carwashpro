@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
+import Link from 'next/link';
 
 export default async function DashboardPage() {
   const cookieStore = await cookies();
@@ -21,6 +22,14 @@ export default async function DashboardPage() {
     .lt('date_time', tomorrow.toISOString())
     .order('date_time', { ascending: false });
 
+  // Fetch today's completed jobs
+  const { data: todaysJobs, error: jobsError } = await supabase
+    .from('vehicle_jobs')
+    .select('vehicle_job_id')
+    .gte('completion_time', today.toISOString())
+    .lt('completion_time', tomorrow.toISOString())
+    .eq('status', 'Completed');
+
   // 3. Fetch recent 5 payments for activity feed
   const { data: recentPayments } = await supabase
     .from('payments')
@@ -34,20 +43,20 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact', head: true })
     .eq('status', 'Active');
 
-  const error = servicesError || paymentsError || staffError;
+  const error = servicesError || paymentsError || staffError || jobsError;
 
   // Calculate metrics
   const revenue = todaysPayments?.reduce((sum, p) => sum + (p.amount || 0), 0) || 0;
-  const washCount = todaysPayments?.length || 0;
+  const washCount = todaysJobs?.length || 0;
   const activeStaff = staffCount || 0;
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-white tracking-tight">Dashboard Overview</h1>
-        <button className="btn-primary flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg">
-          <i className="bi bi-plus-circle mr-2"></i> New Vehicle
-        </button>
+        <Link href="/admin/workflow" className="btn-primary flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg">
+          <i className="bi bi-arrow-right-circle mr-2"></i> Go to Workflow
+        </Link>
       </div>
 
       {/* Stats Grid */}
