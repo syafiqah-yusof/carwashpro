@@ -34,16 +34,14 @@ export async function registerCustomer(prevState: any, formData: FormData) {
     return { error: "A customer with this plate number is already registered." };
   }
 
-  // Insert customer into Supabase
-  const { error } = await supabase.from("customers").insert([
-    {
-      full_name: fullName,
-      primary_vehicle_plate: vehiclePlate,
-      phone_number: phoneNumber || null,
-      pin: password, // For a real app, hash this!
-      membership_id: `VIP-${Math.floor(1000 + Math.random() * 9000)}`, // Auto generate VIP ID
-    },
-  ]);
+  // Insert customer into Supabase using secure RPC
+  const { error } = await supabase.rpc('register_customer', {
+    p_name: fullName,
+    p_plate: vehiclePlate,
+    p_phone: phoneNumber || null,
+    p_pin: password,
+    p_membership_id: `VIP-${Math.floor(1000 + Math.random() * 9000)}`
+  });
 
   if (error) {
     console.error("Register Error:", error);
