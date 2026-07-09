@@ -90,6 +90,11 @@ function LoginForm() {
                   className="w-full bg-transparent text-white px-4 py-3 focus:outline-none placeholder-gray-500"
                 />
               </div>
+              <div className="flex justify-end mt-2">
+                <Link href="/portal/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
+                  Forgot PIN / Password?
+                </Link>
+              </div>
             </div>
 
             <div className="pt-2">
