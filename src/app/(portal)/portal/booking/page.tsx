@@ -68,9 +68,11 @@ export default function BookAppointmentPage() {
               <input 
                 type="time" 
                 name="time"
+                min="09:00"
+                max="21:00"
                 className="w-full bg-gray-800/50 border border-gray-600 rounded-lg text-white px-4 py-3 focus:outline-none focus:border-blue-500 transition-all"
               />
-              <p className="text-xs text-gray-500 mt-1">If left blank, our team will assign an available time for you.</p>
+              <p className="text-xs text-gray-500 mt-1">If left blank, our team will assign an available time. Operating hours: 9:00 AM - 9:00 PM.</p>
             </div>
 
             <div>
