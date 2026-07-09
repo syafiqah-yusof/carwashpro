@@ -35,7 +35,6 @@ export default async function CustomersPage() {
           <table className="w-full text-left border-collapse min-w-[800px]">
             <thead className="bg-black/40">
               <tr className="border-b border-[var(--glass-border)]">
-                <th className="p-4 text-gray-300 font-medium">Customer ID</th>
                 <th className="p-4 text-gray-300 font-medium">Name</th>
                 <th className="p-4 text-gray-300 font-medium">Phone</th>
                 <th className="p-4 text-gray-300 font-medium">Plate Number</th>
@@ -48,7 +47,7 @@ export default async function CustomersPage() {
             <tbody>
               {(!customers || customers.length === 0) ? (
                 <tr>
-                  <td colSpan={8} className="text-center text-gray-500 py-10">No customers registered yet.</td>
+                  <td colSpan={7} className="text-center text-gray-500 py-10">No customers registered yet.</td>
                 </tr>
               ) : (
                 customers.map(item => {
@@ -59,9 +58,6 @@ export default async function CustomersPage() {
 
                   return (
                     <tr key={item.customer_id} className="border-b border-[var(--glass-border)] hover:bg-white/5 transition-colors">
-                      <td className="p-4 text-gray-400 text-sm font-mono">
-                        #{item.customer_id.split('-')[0]}...
-                      </td>
                       <td className="p-4 font-bold text-white">{item.full_name}</td>
                       <td className="p-4 text-gray-300">{item.phone_number || '-'}</td>
                       <td className="p-4 font-medium text-gray-200">
