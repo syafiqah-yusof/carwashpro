@@ -103,6 +103,21 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Location Section */}
+      <section id="location" className="py-20 bg-slate-950 border-t border-white/5 relative z-10">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Find Us</h2>
+          <p className="text-gray-400 mb-10 max-w-2xl mx-auto text-lg">Drop by our detailing studio for a premium wash. Follow the map below for live directions.</p>
+          <div className="glass-card p-2 rounded-2xl border border-white/10 max-w-4xl mx-auto overflow-hidden shadow-2xl bg-white/[0.02]">
+            <iframe 
+              src="https://embed.waze.com/iframe?zoom=16&lat=2.992551&lon=101.799595&ct=livemap" 
+              className="w-full h-[450px] rounded-xl border-0" 
+              allowFullScreen
+            ></iframe>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="border-t border-white/10 bg-black/60 pt-16 pb-8">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
