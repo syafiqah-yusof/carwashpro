@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import PromoCarousel from './(portal)/components/PromoCarousel';
+import ScrollToTop from '@/components/ScrollToTop';
 
 export default function LandingPage() {
   return (
@@ -149,6 +150,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Scroll To Top Button */}
+      <ScrollToTop />
     </main>
   );
 }
