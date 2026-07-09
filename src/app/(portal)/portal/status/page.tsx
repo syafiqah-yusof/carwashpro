@@ -2,7 +2,7 @@ import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import PromoCarousel from '../components/PromoCarousel';
+import PromoCarousel from '../../components/PromoCarousel';
 
 export default async function PortalStatusPage() {
   const cookieStore = await cookies();
