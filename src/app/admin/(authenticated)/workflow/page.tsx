@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import NewArrivalModal from './NewArrivalModal';
+import WorkflowStatusButton from './WorkflowStatusButton';
 
 export const revalidate = 0; // Disable static caching so it always loads fresh data
 
@@ -55,9 +56,13 @@ export default async function WorkflowPage() {
                   {new Date(job.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                   {job.notes && <><br /><i className="italic text-gray-500">{job.notes}</i></>}
                 </p>
-                <button className="w-full py-1.5 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black transition-colors text-sm font-medium">
-                  Start Washing <i className="bi bi-arrow-right ml-1"></i>
-                </button>
+                <WorkflowStatusButton 
+                  jobId={job.vehicle_job_id} 
+                  targetStatus="Washing" 
+                  label="Start Washing" 
+                  iconClass="bi bi-arrow-right ml-1" 
+                  className="w-full py-1.5 rounded-md border border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black transition-colors text-sm font-medium" 
+                />
               </div>
             ))}
           </div>
@@ -81,9 +86,13 @@ export default async function WorkflowPage() {
                   {new Date(job.arrival_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </p>
                 <div className="flex flex-col space-y-2">
-                  <button className="w-full py-1.5 rounded-md border border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black transition-colors text-sm font-medium">
-                    Mark Ready <i className="bi bi-arrow-right ml-1"></i>
-                  </button>
+                  <WorkflowStatusButton 
+                    jobId={job.vehicle_job_id} 
+                    targetStatus="Ready" 
+                    label="Mark Ready" 
+                    iconClass="bi bi-arrow-right ml-1" 
+                    className="w-full py-1.5 rounded-md border border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black transition-colors text-sm font-medium" 
+                  />
                   <button className="w-full py-1.5 rounded-md border border-gray-600 text-gray-300 hover:bg-gray-700 transition-colors text-sm font-medium">
                     <i className="bi bi-people-fill text-yellow-500 mr-1"></i> Assign Polishers
                   </button>
@@ -111,9 +120,13 @@ export default async function WorkflowPage() {
                   Ready at {job.completion_time ? new Date(job.completion_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '...'}
                 </p>
                 <div className="flex flex-col gap-2">
-                  <button className="w-full py-1.5 rounded-md bg-green-600 hover:bg-green-500 text-white transition-colors text-sm font-medium">
-                    Complete / Paid <i className="bi bi-check-lg ml-1"></i>
-                  </button>
+                  <WorkflowStatusButton 
+                    jobId={job.vehicle_job_id} 
+                    targetStatus="Completed" 
+                    label="Complete / Paid" 
+                    iconClass="bi bi-check-lg ml-1" 
+                    className="w-full py-1.5 rounded-md bg-green-600 hover:bg-green-500 text-white transition-colors text-sm font-medium" 
+                  />
                   
                   {job.customers?.phone_number && (
                     <a 

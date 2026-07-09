@@ -77,3 +77,28 @@ export async function checkInAppointment(appointmentId: number, plate: string, c
     return { error: err.message || "Unknown error occurred" };
   }
 }
+
+export async function updateJobStatus(jobId: string, newStatus: string) {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const updateData: any = { status: newStatus };
+    if (newStatus === 'Ready' || newStatus === 'Completed') {
+      updateData.completion_time = new Date().toISOString();
+    }
+
+    const { error } = await supabase
+      .from('vehicle_jobs')
+      .update(updateData)
+      .eq('vehicle_job_id', jobId);
+
+    if (error) throw error;
+
+    revalidatePath("/admin/workflow");
+    return { success: true };
+  } catch (err: any) {
+    console.error("Update Status Error:", err);
+    return { error: err.message || "Unknown error occurred" };
+  }
+}
