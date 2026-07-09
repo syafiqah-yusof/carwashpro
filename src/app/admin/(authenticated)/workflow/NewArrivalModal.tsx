@@ -11,12 +11,15 @@ export default function NewArrivalModal({ customers, appointments }: { customers
   const [tab, setTab] = useState<'walkin' | 'appointments'>('walkin');
   const [searchPlate, setSearchPlate] = useState('');
   
+  const [plateInput, setPlateInput] = useState('');
+  
   const [addState, formAction, isAdding] = useActionState(addVehicleJob, null);
 
   useEffect(() => {
     if (addState?.success) {
       setIsOpen(false);
       setSearchPlate('');
+      setPlateInput('');
     }
   }, [addState]);
 
@@ -34,7 +37,7 @@ export default function NewArrivalModal({ customers, appointments }: { customers
   return (
     <>
       <button 
-        onClick={() => setIsOpen(true)}
+        onClick={() => { setIsOpen(true); setPlateInput(''); setSearchPlate(''); }}
         className="btn-primary flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg"
       >
         <i className="bi bi-car-front-fill mr-2"></i> New Arrival
@@ -85,7 +88,13 @@ export default function NewArrivalModal({ customers, appointments }: { customers
                         {filteredCustomers.length === 0 ? <p className="text-gray-500 text-xs text-center py-2">No matching customers found.</p> : null}
                         {filteredCustomers.map(c => (
                           <label key={c.customer_id} className="flex items-center gap-2 p-2 hover:bg-gray-800 rounded cursor-pointer border border-transparent hover:border-gray-700">
-                            <input type="radio" name="customer_id" value={c.customer_id} className="accent-blue-500" />
+                            <input 
+                              type="radio" 
+                              name="customer_id" 
+                              value={c.customer_id} 
+                              className="accent-blue-500" 
+                              onChange={() => setPlateInput(c.primary_vehicle_plate || '')}
+                            />
                             <div className="flex-1">
                               <p className="text-white text-sm font-bold">{c.primary_vehicle_plate} <i className="bi bi-star-fill text-yellow-500 text-xs"></i></p>
                               <p className="text-gray-400 text-xs">{c.full_name} • {c.phone_number}</p>
@@ -98,7 +107,14 @@ export default function NewArrivalModal({ customers, appointments }: { customers
 
                   <div>
                     <label className="block text-gray-300 font-semibold mb-1">Vehicle Plate <span className="text-red-500">*</span></label>
-                    <input type="text" name="vehicle_plate" className="w-full bg-gray-800 border border-gray-600 rounded-lg text-white px-3 py-2 uppercase focus:border-blue-500 focus:outline-none" placeholder="e.g. VFC 1234" />
+                    <input 
+                      type="text" 
+                      name="vehicle_plate" 
+                      value={plateInput}
+                      onChange={(e) => setPlateInput(e.target.value)}
+                      className="w-full bg-gray-800 border border-gray-600 rounded-lg text-white px-3 py-2 uppercase focus:border-blue-500 focus:outline-none" 
+                      placeholder="e.g. VFC 1234" 
+                    />
                     <p className="text-xs text-gray-500 mt-1">If you selected a customer above, this will override their primary plate.</p>
                   </div>
 
