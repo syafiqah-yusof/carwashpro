@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
+import NewArrivalModal from './NewArrivalModal';
 
 export const revalidate = 0; // Disable static caching so it always loads fresh data
 
@@ -10,6 +11,18 @@ export default async function WorkflowPage() {
   // Fetch jobs with customer info for WhatsApp
   const { data: jobs } = await supabase.from('vehicle_jobs').select('*, customers(full_name, phone_number)').order('arrival_time', { ascending: true });
   
+  // Fetch all customers for Walk-In search
+  const { data: customers } = await supabase.from('customers').select('*').order('full_name', { ascending: true });
+
+  // Fetch today's approved appointments for one-click check-in
+  const today = new Date().toISOString().split('T')[0];
+  const { data: appointments } = await supabase
+    .from('appointments')
+    .select('*, customers(full_name, phone_number, primary_vehicle_plate)')
+    .eq('appointment_date', today)
+    .eq('status', 'Approved')
+    .order('appointment_time', { ascending: true });
+
   const waiting = jobs?.filter(j => j.status === 'Waiting') || [];
   const washing = jobs?.filter(j => j.status === 'Washing') || [];
   const ready = jobs?.filter(j => j.status === 'Ready') || [];
@@ -19,9 +32,7 @@ export default async function WorkflowPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-white">Vehicle Workflow Kanban</h2>
-        <button className="btn-primary flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-lg">
-          <i className="bi bi-car-front-fill mr-2"></i> New Arrival
-        </button>
+        <NewArrivalModal customers={customers || []} appointments={appointments || []} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 min-h-[70vh]">
