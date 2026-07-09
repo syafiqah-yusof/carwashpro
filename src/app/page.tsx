@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import PromoCarousel from './(portal)/components/PromoCarousel';
 
 export default function LandingPage() {
   return (
@@ -58,6 +59,13 @@ export default function LandingPage() {
               <i className="bi bi-car-front mr-2"></i> Track My Car
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Promotions Section */}
+      <section className="py-12 bg-slate-900/50 border-t border-white/5 relative z-10">
+        <div className="max-w-4xl mx-auto px-6">
+          <PromoCarousel />
         </div>
       </section>
 
