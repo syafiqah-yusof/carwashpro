@@ -124,12 +124,15 @@ export async function bookAppointment(prevState: any, formData: FormData) {
     const date = formData.get("date") as string;
     const time = formData.get("time") as string || null;
     const notes = formData.get("notes") as string || '';
+    const customPlate = formData.get("plate") as string;
+    
+    const finalPlate = customPlate?.trim() ? customPlate.toUpperCase() : ((customer as any)?.primary_vehicle_plate || 'Unknown');
 
     if (!date) return { error: "Date is required" };
 
     const { error: dbError } = await supabase.rpc('book_appointment', {
       p_c_id: customerId,
-      p_plate: (customer as any)?.primary_vehicle_plate || 'Unknown',
+      p_plate: finalPlate,
       p_date: date,
       p_time: time,
       p_notes: notes

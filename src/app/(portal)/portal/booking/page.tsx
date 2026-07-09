@@ -53,6 +53,16 @@ export default function BookAppointmentPage() {
 
           <form action={formAction} className="space-y-6">
             <div>
+              <label className="block text-gray-400 font-semibold mb-2">Vehicle Plate (Optional)</label>
+              <input 
+                type="text" 
+                name="plate"
+                placeholder="Leave blank to use your primary car"
+                className="w-full bg-gray-800/50 border border-gray-600 rounded-lg text-white px-4 py-3 focus:outline-none focus:border-blue-500 transition-all uppercase placeholder-gray-500"
+              />
+            </div>
+
+            <div>
               <label className="block text-gray-400 font-semibold mb-2">Select Date <span className="text-red-500">*</span></label>
               <input 
                 type="date" 
