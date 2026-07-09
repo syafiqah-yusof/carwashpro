@@ -130,7 +130,7 @@ export default async function WorkflowPage() {
                   
                   {job.customers?.phone_number && (
                     <a 
-                      href={`https://wa.me/${job.customers.phone_number.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${job.customers.full_name},\n\nYour car (${job.vehicle_plate}) is shining and ready for pickup at AKC Car Wash!`)}`}
+                      href={`https://wa.me/${job.customers.phone_number.replace(/[^0-9]/g, '').replace(/^0/, '60')}?text=${encodeURIComponent(`Hello ${job.customers.full_name},\n\nYour car (${job.vehicle_plate}) is shining and ready for pickup at AKC Car Wash!`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="w-full py-1.5 rounded-md bg-[#25D366] hover:bg-[#1DA851] text-white transition-colors text-sm font-medium flex justify-center items-center shadow-lg"
