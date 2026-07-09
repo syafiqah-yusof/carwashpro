@@ -7,8 +7,8 @@ export default async function WorkflowPage() {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 
-  // Fetch jobs
-  const { data: jobs } = await supabase.from('vehicle_jobs').select('*').order('arrival_time', { ascending: true });
+  // Fetch jobs with customer info for WhatsApp
+  const { data: jobs } = await supabase.from('vehicle_jobs').select('*, customers(full_name, phone_number)').order('arrival_time', { ascending: true });
   
   const waiting = jobs?.filter(j => j.status === 'Waiting') || [];
   const washing = jobs?.filter(j => j.status === 'Washing') || [];
@@ -99,9 +99,22 @@ export default async function WorkflowPage() {
                   <i className="bi bi-check2-circle text-green-500 mr-1"></i> 
                   Ready at {job.completion_time ? new Date(job.completion_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '...'}
                 </p>
-                <button className="w-full py-1.5 rounded-md bg-green-600 hover:bg-green-500 text-white transition-colors text-sm font-medium">
-                  Complete / Paid <i className="bi bi-check-lg ml-1"></i>
-                </button>
+                <div className="flex flex-col gap-2">
+                  <button className="w-full py-1.5 rounded-md bg-green-600 hover:bg-green-500 text-white transition-colors text-sm font-medium">
+                    Complete / Paid <i className="bi bi-check-lg ml-1"></i>
+                  </button>
+                  
+                  {job.customers?.phone_number && (
+                    <a 
+                      href={`https://wa.me/${job.customers.phone_number.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hello ${job.customers.full_name},\n\nYour car (${job.vehicle_plate}) is shining and ready for pickup at AKC Car Wash!`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-1.5 rounded-md bg-[#25D366] hover:bg-[#1DA851] text-white transition-colors text-sm font-medium flex justify-center items-center shadow-lg"
+                    >
+                      <i className="bi bi-whatsapp mr-1"></i> Notify Customer
+                    </a>
+                  )}
+                </div>
               </div>
             ))}
           </div>
